@@ -1,0 +1,27 @@
+{% extends 'users/base.html' %}
+{% block title %}Log In{% endblock %}
+
+{% block content %}
+<div class="center-wrap">
+  <div class="card">
+    <h1 class="card-title">Welcome back</h1>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" autocomplete="username" autofocus required />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" autocomplete="current-password" required />
+      </div>
+      <button type="submit" class="btn btn-primary" style="margin-top:0.5rem">Log in</button>
+    </form>
+    <div class="divider">or</div>
+    <p style="text-align:center; font-size:14px; color:var(--muted)">
+      No account yet?
+      <a href="{% url 'register' %}" style="color:var(--accent); text-decoration:none;">Sign up</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

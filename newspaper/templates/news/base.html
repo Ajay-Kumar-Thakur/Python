@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The Chronicle - Breaking news, analysis, and opinion from around the world">
+<title>{% block title %}The Chronicle — Breaking News & Analysis{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Inter:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root {
+    --primary-dark: #1a1a2e;
+    --secondary-dark: #16213e;
+    --accent-red: #c0392b;
+    --accent-gold: #d4af37;
+    --text-dark: #2c3e50;
+    --text-light: #7f8c8d;
+    --bg-white: #ffffff;
+    --bg-gray: #f8f9fa;
+    --border-light: #e9ecef;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+    --transition: all 0.3s ease;
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-white);
+    color: var(--text-dark);
+    line-height: 1.6;
+  }
+  
+  /* Typography */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  
+  /* Header Styles */
+  .site-header {
+    background: var(--bg-white);
+    border-bottom: 3px solid var(--accent-red);
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(255,255,255,0.98);
+    backdrop-filter: blur(10px);
+  }
+  
+  .top-bar {
+    background: var(--primary-dark);
+    color: white;
+    padding: 8px 0;
+    font-size: 12px;
+  }
+  
+  .top-bar-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .date-display {
+    font-family: 'Inter', monospace;
+    letter-spacing: 0.5px;
+  }
+  
+  .weather-widget {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .social-links a {
+    color: white;
+    margin-left: 15px;
+    transition: var(--transition);
+  }
+  
+  .social-links a:hover {
+    color: var(--accent-gold);
+  }
+  
+  .main-header {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    text-align: center;
+  }
+  
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 64px;
+    font-weight: 900;
+    letter-spacing: -2px;
+    color: var(--primary-dark);
+    text-decoration: none;
+    display: inline-block;
+  }
+  
+  .logo:hover {
+    color: var(--accent-red);
+  }
+  
+  .tagline {
+    font-family: 'Inter', serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-top: 10px;
+  }
+  
+  /* Navigation */
+  .main-nav {
+    background: var(--secondary-dark);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  .nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+  }
+  
+  .nav-menu {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    gap: 0;
+  }
+  
+  .nav-item {
+    position: relative;
+  }
+  
+  .nav-link {
+    display: block;
+    padding: 15px 20px;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: var(--transition);
+  }
+  
+  .nav-link:hover {
+    background: var(--accent-red);
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--secondary-dark);
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition);
+    z-index: 100;
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .nav-item:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .dropdown-menu a {
+    display: block;
+    padding: 10px 20px;
+    color: white;
+    text-decoration: none;
+    font-size: 13px;
+    transition: var(--transition);
+  }
+  
+  .dropdown-menu a:hover {
+    background: var(--accent-red);
+    padding-left: 30px;
+  }
+  
+  .search-form {
+    display: flex;
+    align-items: center;
+  }
+  
+  .search-input {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 25px;
+    font-size: 14px;
+    width: 200px;
+    outline: none;
+  }
+  
+  .search-btn {
+    background: var(--accent-red);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 25px;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  
+  .search-btn:hover {
+    background: #a93226;
+  }
+  
+  /* Breaking News Ticker */
+  .breaking-news {
+    background: linear-gradient(90deg, var(--accent-red) 0%, #e74c3c 100%);
+    color: white;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .breaking-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .breaking-label {
+    background: var(--primary-dark);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    animation: pulse 1.5s infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  
+  .breaking-ticker {
+    flex: 1;
+    overflow: hidden;
+  }
+  
+  .ticker-content {
+    display: flex;
+    animation: ticker 30s linear infinite;
+    white-space: nowrap;
+  }
+  
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  
+  .breaking-item {
+    color: white;
+    text-decoration: none;
+    margin-right: 40px;
+    font-size: 14px;
+  }
+  
+  .breaking-item:hover {
+    text-decoration: underline;
+  }
+  
+  /* Main Content */
+  .main-content {
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+  
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 40px;
+  }
+  
+  @media (max-width: 992px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  /* Footer */
+  .site-footer {
+    background: var(--primary-dark);
+    color: white;
+    margin-top: 60px;
+  }
+  
+  .footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 60px 20px 40px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+  }
+  
+  @media (max-width: 768px) {
+    .footer-content {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  .footer-section h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: var(--accent-gold);
+  }
+  
+  .footer-section ul {
+    list-style: none;
+  }
+  
+  .footer-section ul li {
+    margin-bottom: 10px;
+  }
+  
+  .footer-section a {
+    color: #bdc3c7;
+    text-decoration: none;
+    transition: var(--transition);
+  }
+  
+  .footer-section a:hover {
+    color: var(--accent-gold);
+    padding-left: 5px;
+  }
+  
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    color: #bdc3c7;
+  }
+  
+  /* Sidebar Widgets */
+  .sidebar-widget {
+    background: var(--bg-gray);
+    padding: 25px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+  }
+  
+  .widget-title {
+    font-size: 18px;
+    border-left: 4px solid var(--accent-red);
+    padding-left: 12px;
+    margin-bottom: 20px;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .logo {
+      font-size: 40px;
+    }
+    
+    .nav-menu {
+      flex-wrap: wrap;
+    }
+    
+    .nav-link {
+      padding: 10px 15px;
+      font-size: 12px;
+    }
+  }
+  
+  /* Utility Classes */
+  .btn {
+    display: inline-block;
+    padding: 10px 25px;
+    background: var(--accent-red);
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: var(--transition);
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+  .btn:hover {
+    background: #a93226;
+    transform: translateY(-2px);
+  }
+  
+  .btn-outline {
+    background: transparent;
+    border: 2px solid var(--accent-red);
+    color: var(--accent-red);
+  }
+  
+  .btn-outline:hover {
+    background: var(--accent-red);
+    color: white;
+  }
+  
+  .badge {
+    display: inline-block;
+    padding: 3px 8px;
+    background: var(--accent-red);
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 3px;
+    margin-right: 8px;
+  }
+</style>
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="top-bar">
+  <div class="top-bar-content">
+    <div class="date-display">
+      <i class="far fa-calendar-alt"></i>
+      <span id="current-date"></span>
+    </div>
+    <div class="weather-widget">
+      <i class="fas fa-cloud-sun"></i>
+      <span>New York, NY <span id="weather-temp">72°F</span></span>
+    </div>
+    <div class="social-links">
+      <a href="#"><i class="fab fa-twitter"></i></a>
+      <a href="#"><i class="fab fa-facebook"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-youtube"></i></a>
+    </div>
+  </div>
+</div>
+
+<!-- Main Header -->
+<header class="site-header">
+  <div class="main-header">
+    <a href="/" class="logo">THE CHRONICLE</a>
+    <div class="tagline">ESTABLISHED 1847 • TRUSTED NEWS SOURCE</div>
+  </div>
+  
+  <!-- Navigation -->
+  <div class="main-nav">
+    <div class="nav-container">
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+        {% for cat in categories %}
+        <li class="nav-item">
+          <a href="/category/{{ cat.slug }}/" class="nav-link">{{ cat.name }}</a>
+          <div class="dropdown-menu">
+            <a href="/category/{{ cat.slug }}/?filter=latest">Latest</a>
+            <a href="/category/{{ cat.slug }}/?filter=popular">Most Read</a>
+            <a href="/category/{{ cat.slug }}/?filter=analysis">Analysis</a>
+          </div>
+        </li>
+        {% endfor %}
+        <li class="nav-item" style="margin-left: auto;">
+          <form action="/search/" method="GET" class="search-form">
+            <input type="text" name="q" class="search-input" placeholder="Search news..." value="{{ request.GET.q }}">
+            <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+          </form>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<!-- Breaking News Ticker -->
+{% if breaking %}
+<div class="breaking-news">
+  <div class="breaking-container">
+    <span class="breaking-label"><i class="fas fa-bolt"></i> BREAKING</span>
+    <div class="breaking-ticker">
+      <div class="ticker-content">
+        {% for item in breaking %}
+        <a href="{{ item.get_absolute_url }}" class="breaking-item">{{ item.title }}</a>
+        {% endfor %}
+        {% for item in breaking %}
+        <a href="{{ item.get_absolute_url }}" class="breaking-item">{{ item.title }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Main Content -->
+<div class="main-content">
+  {% block content %}{% endblock %}
+</div>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>About The Chronicle</h3>
+      <p>Delivering trusted news and in-depth analysis since 1847. Committed to journalistic excellence and integrity.</p>
+    </div>
+    <div class="footer-section">
+      <h3>Sections</h3>
+      <ul>
+        <li><a href="#">World News</a></li>
+        <li><a href="#">Politics</a></li>
+        <li><a href="#">Business</a></li>
+        <li><a href="#">Technology</a></li>
+        <li><a href="#">Science</a></li>
+        <li><a href="#">Culture</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3>Company</h3>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Advertise</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Press Room</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3>Subscribe</h3>
+      <p>Get unlimited access to our journalism</p>
+      <button class="btn" style="margin-top: 15px;">Subscribe Now</button>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 The Chronicle Publishing Company. All rights reserved. | Privacy Policy | Terms of Service</p>
+  </div>
+</footer>
+
+<script>
+  // Dynamic date
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', options);
+</script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

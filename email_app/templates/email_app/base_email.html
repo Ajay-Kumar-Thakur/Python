@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}MailManager Pro{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --sidebar-bg: #ffffff;
+      --sidebar-border: #e8edf2;
+      --sidebar-text: #64748b;
+      --sidebar-active: #1e40af;
+      --sidebar-active-bg: #eff6ff;
+      --sidebar-hover-bg: #f8fafc;
+      --accent: #2563eb;
+      --accent-light: #dbeafe;
+      --accent-muted: #1d4ed8;
+      --surface: #ffffff;
+      --surface-muted: #f9fafb;
+      --border: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --success: #059669;
+      --success-bg: #d1fae5;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+      --warning: #d97706;
+      --warning-bg: #fef3c7;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+      --shadow-md: 0 4px 16px rgba(0,0,0,.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      background: #ffffff;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text-primary);
+      font-size: 14px;
+      margin: 0;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 220px;
+      min-height: 100vh;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      box-shadow: 2px 0 12px rgba(0,0,0,.04);
+    }
+
+    .sidebar-brand {
+      padding: 1.5rem 1.25rem 1rem;
+      border-bottom: 1px solid var(--sidebar-border);
+      margin-bottom: .75rem;
+    }
+
+    .sidebar-brand .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: #0f172a;
+      letter-spacing: .02em;
+    }
+
+    .sidebar-brand .brand-tag {
+      font-size: .68rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-top: .1rem;
+    }
+
+    .sidebar-nav {
+      padding: .5rem .75rem;
+      flex: 1;
+    }
+
+    .sidebar-section-label {
+      font-size: .65rem;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: #b0bec8;
+      padding: .75rem .5rem .3rem;
+      font-weight: 600;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: .625rem;
+      padding: .55rem .75rem;
+      border-radius: 7px;
+      color: var(--sidebar-text);
+      text-decoration: none;
+      font-size: .82rem;
+      font-weight: 400;
+      margin-bottom: 2px;
+      transition: background .15s, color .15s;
+    }
+
+    .sidebar-link i { font-size: .9rem; opacity: .7; }
+    .sidebar-link:hover { background: var(--sidebar-hover-bg); color: #334155; }
+    .sidebar-link:hover i { opacity: 1; }
+    .sidebar-link.active {
+      background: var(--sidebar-active-bg);
+      color: var(--sidebar-active);
+      font-weight: 600;
+      border-left: 3px solid var(--accent);
+      padding-left: calc(.75rem - 3px);
+    }
+    .sidebar-link.active i { opacity: 1; }
+
+    .sidebar-footer {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--sidebar-border);
+      font-size: .72rem;
+      color: #b0bec8;
+    }
+
+    /* ── Main ── */
+    .main-content {
+      flex: 1;
+      padding: 2rem 2.25rem;
+      max-width: 1200px;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .card-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: .9rem 1.25rem;
+      font-weight: 600;
+      font-size: .82rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text-secondary);
+    }
+
+    /* ── Badges ── */
+    .badge-sent    { background: var(--success-bg); color: var(--success); font-weight: 500; }
+    .badge-failed  { background: var(--danger-bg);  color: var(--danger);  font-weight: 500; }
+    .badge-pending { background: var(--warning-bg); color: var(--warning); font-weight: 500; }
+
+    /* ── Tables ── */
+    .table { font-size: .83rem; }
+    .table th {
+      font-size: .7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      padding: .6rem 1rem;
+    }
+    .table td { padding: .75rem 1rem; vertical-align: middle; color: var(--text-primary); border-color: #f1f5f9; }
+    .table-hover tbody tr:hover td { background: #f8fafc; }
+
+    /* ── Buttons ── */
+    .btn {
+      font-family: 'DM Sans', sans-serif;
+      font-size: .82rem;
+      font-weight: 500;
+      border-radius: var(--radius);
+      transition: all .15s;
+    }
+    .btn-primary { background: var(--accent); border-color: var(--accent); }
+    .btn-primary:hover { background: var(--accent-muted); border-color: var(--accent-muted); }
+    .btn-outline-primary { color: var(--accent); border-color: var(--accent); }
+    .btn-outline-primary:hover { background: var(--accent); border-color: var(--accent); }
+    .btn-sm { font-size: .76rem; padding: .3rem .75rem; }
+
+    /* ── Forms ── */
+    .form-label { font-size: .78rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .4rem; }
+    .form-control, .form-select {
+      font-family: 'DM Sans', sans-serif;
+      font-size: .85rem;
+      border: 1px solid #d1d9e0;
+      border-radius: var(--radius);
+      padding: .55rem .85rem;
+      color: var(--text-primary);
+      background: #fdfdfe;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+    }
+    textarea.form-control { min-height: 160px; resize: vertical; }
+
+    /* ── Professional Toast Alert ── */
+    #pro-alert-container {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+      pointer-events: none;
+    }
+
+    .pro-alert {
+      display: flex;
+      align-items: flex-start;
+      gap: .875rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.06);
+      padding: 1rem 1.25rem;
+      min-width: 320px;
+      max-width: 400px;
+      pointer-events: all;
+      animation: alertSlideIn .25s cubic-bezier(.16,1,.3,1);
+      border-left: 3px solid transparent;
+      position: relative;
+    }
+
+    .pro-alert.alert-success { border-left-color: var(--success); }
+    .pro-alert.alert-danger   { border-left-color: var(--danger); }
+    .pro-alert.alert-warning  { border-left-color: var(--warning); }
+    .pro-alert.alert-info     { border-left-color: var(--accent); }
+
+    .pro-alert-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: .95rem;
+    }
+
+    .pro-alert.alert-success .pro-alert-icon { background: var(--success-bg); color: var(--success); }
+    .pro-alert.alert-danger  .pro-alert-icon { background: var(--danger-bg);  color: var(--danger); }
+    .pro-alert.alert-warning .pro-alert-icon { background: var(--warning-bg); color: var(--warning); }
+    .pro-alert.alert-info    .pro-alert-icon { background: var(--accent-light); color: var(--accent); }
+
+    .pro-alert-body { flex: 1; min-width: 0; }
+    .pro-alert-title { font-weight: 600; font-size: .82rem; color: var(--text-primary); margin-bottom: .15rem; }
+    .pro-alert-msg   { font-size: .79rem; color: var(--text-secondary); line-height: 1.5; }
+
+    .pro-alert-close {
+      background: none; border: none; color: var(--text-muted);
+      cursor: pointer; font-size: 1rem; padding: 0; line-height: 1;
+      flex-shrink: 0; margin-top: -.1rem;
+    }
+    .pro-alert-close:hover { color: var(--text-primary); }
+
+    .pro-alert-progress {
+      position: absolute;
+      bottom: 0; left: 0;
+      height: 2px;
+      background: currentColor;
+      border-radius: 0 0 0 10px;
+      animation: alertProgress 4s linear forwards;
+      opacity: .3;
+    }
+
+    .pro-alert.alert-success .pro-alert-progress { color: var(--success); }
+    .pro-alert.alert-danger  .pro-alert-progress { color: var(--danger); }
+    .pro-alert.alert-info    .pro-alert-progress { color: var(--accent); }
+
+    .pro-alert.fade-out { animation: alertSlideOut .2s ease forwards; }
+
+    @keyframes alertSlideIn {
+      from { opacity:0; transform: translateX(16px) scale(.98); }
+      to   { opacity:1; transform: translateX(0) scale(1); }
+    }
+    @keyframes alertSlideOut {
+      to { opacity:0; transform: translateX(16px) scale(.96); }
+    }
+    @keyframes alertProgress {
+      from { width: 100%; }
+      to   { width: 0%; }
+    }
+
+    /* ── Page header ── */
+    .page-header {
+      margin-bottom: 1.75rem;
+    }
+    .page-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0 0 .2rem;
+    }
+    .page-header p {
+      color: var(--text-muted);
+      font-size: .82rem;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+<div class="d-flex" style="min-height:100vh;">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-name"><i class="bi bi-envelope-fill me-2" style="color:#2563eb;font-size:.95rem;"></i>MailManager</div>
+      <div class="brand-tag">Professional Suite</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Compose</div>
+      <a href="{% url 'email_app:send_email' %}" class="sidebar-link {% if request.resolver_match.url_name == 'send_email' %}active{% endif %}">
+        <i class="bi bi-send"></i> Send Email
+      </a>
+      <a href="{% url 'email_app:bulk_email' %}" class="sidebar-link {% if request.resolver_match.url_name == 'bulk_email' %}active{% endif %}">
+        <i class="bi bi-collection-fill"></i> Bulk Campaign
+      </a>
+      <div class="sidebar-section-label">Manage</div>
+      <a href="{% url 'email_app:email_history' %}" class="sidebar-link {% if request.resolver_match.url_name == 'email_history' %}active{% endif %}">
+        <i class="bi bi-journal-text"></i> History
+      </a>
+      <a href="{% url 'email_app:inbox' %}" class="sidebar-link {% if request.resolver_match.url_name == 'inbox' or request.resolver_match.url_name == 'inbox_detail' %}active{% endif %}">
+        <i class="bi bi-inbox"></i> Inbox
+      </a>
+    </nav>
+    <div class="sidebar-footer">© MailManager Pro</div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+
+    <!-- Django messages → Pro Alerts -->
+    {% if messages %}
+      <script>
+        window.__djangoMessages = [
+          {% for message in messages %}
+          { tags: "{{ message.tags }}", text: "{{ message|escapejs }}" }{% if not forloop.last %},{% endif %}
+          {% endfor %}
+        ];
+      </script>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+<!-- Pro Alert Container -->
+<div id="pro-alert-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  /* ── Professional Alert System ── */
+  const alertMeta = {
+    success: { icon: 'bi-check-circle-fill', title: 'Success' },
+    error:   { icon: 'bi-x-circle-fill',     title: 'Error' },
+    danger:  { icon: 'bi-x-circle-fill',     title: 'Error' },
+    warning: { icon: 'bi-exclamation-triangle-fill', title: 'Warning' },
+    info:    { icon: 'bi-info-circle-fill',   title: 'Information' },
+  };
+
+  function showProAlert(message, type = 'info', duration = 4000) {
+    const container = document.getElementById('pro-alert-container');
+    const meta = alertMeta[type] || alertMeta.info;
+    const cssType = type === 'error' ? 'danger' : type;
+
+    const el = document.createElement('div');
+    el.className = `pro-alert alert-${cssType}`;
+    el.innerHTML = `
+      <div class="pro-alert-icon"><i class="bi ${meta.icon}"></i></div>
+      <div class="pro-alert-body">
+        <div class="pro-alert-title">${meta.title}</div>
+        <div class="pro-alert-msg">${message}</div>
+      </div>
+      <button class="pro-alert-close" onclick="dismissAlert(this.closest('.pro-alert'))">
+        <i class="bi bi-x"></i>
+      </button>
+      <div class="pro-alert-progress"></div>
+    `;
+    container.appendChild(el);
+
+    const timer = setTimeout(() => dismissAlert(el), duration);
+    el._timer = timer;
+  }
+
+  function dismissAlert(el) {
+    if (!el || el._dismissed) return;
+    el._dismissed = true;
+    clearTimeout(el._timer);
+    el.classList.add('fade-out');
+    setTimeout(() => el.remove(), 220);
+  }
+
+  // Render Django messages on load
+  document.addEventListener('DOMContentLoaded', () => {
+    (window.__djangoMessages || []).forEach(m => {
+      const type = m.tags.includes('error') ? 'error'
+                 : m.tags.includes('success') ? 'success'
+                 : m.tags.includes('warning') ? 'warning' : 'info';
+      showProAlert(m.text, type);
+    });
+  });
+
+  // Expose globally for form submission use
+  window.showProAlert = showProAlert;
+</script>
+</body>
+</html>

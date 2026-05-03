@@ -1,0 +1,70 @@
+{% extends 'email_app/base_email.html' %}
+{% block title %}Bulk Campaign{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1><i class="bi bi-collection-fill" style="color:#2563eb;font-size:1.2rem;"></i> Bulk Campaign</h1>
+  <p>Send one message to multiple recipients at once.</p>
+</div>
+
+<div class="row">
+  <div class="col-lg-7 col-xl-6">
+    <div class="card">
+      <div class="card-header">
+        <i class="bi bi-envelope-paper me-1"></i> Campaign Details
+      </div>
+      <div class="p-4">
+        <form method="post" id="bulk-form">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="mb-4">
+              <label class="form-label">{{ field.label }}</label>
+              {{ field }}
+              {% if field.help_text %}
+                <div style="font-size:.74rem;color:#94a3b8;margin-top:.3rem;">
+                  <i class="bi bi-info-circle me-1"></i>{{ field.help_text }}
+                </div>
+              {% endif %}
+              {% if field.errors %}
+                <div class="text-danger" style="font-size:.76rem;margin-top:.3rem;">
+                  <i class="bi bi-exclamation-circle me-1"></i>{{ field.errors.0 }}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+
+          <div class="alert" style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:.75rem 1rem;font-size:.79rem;color:#1e40af;margin-bottom:1.25rem;">
+            <i class="bi bi-info-circle-fill me-1"></i>
+            Separate multiple recipient emails with <strong>commas</strong>. e.g. <code>a@co.com, b@co.com</code>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100" id="launch-btn">
+            <i class="bi bi-rocket-takeoff me-1"></i> Launch Campaign
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5 col-xl-4 mt-4 mt-lg-0">
+    <div class="card" style="background:#f8fafc;">
+      <div class="card-header" style="background:#f8fafc;"><i class="bi bi-bar-chart me-1 text-primary"></i> Campaign Guide</div>
+      <ul style="list-style:none;padding:1rem 1.25rem;margin:0;font-size:.8rem;color:#64748b;line-height:2.1;">
+        <li><i class="bi bi-dot text-primary"></i> Name your campaign for easy tracking.</li>
+        <li><i class="bi bi-dot text-primary"></i> Max recommended: 500 recipients at once.</li>
+        <li><i class="bi bi-dot text-primary"></i> Monitor delivery in History → Campaign Detail.</li>
+        <li><i class="bi bi-dot text-primary"></i> Failed deliveries are logged automatically.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('bulk-form').addEventListener('submit', function(e) {
+  const btn = document.getElementById('launch-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" style="width:.75rem;height:.75rem;border-width:2px;"></span> Launching campaign…';
+  showProAlert('Campaign is being dispatched. This may take a moment.', 'info', 8000);
+});
+</script>
+{% endblock %}

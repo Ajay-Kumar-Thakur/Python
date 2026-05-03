@@ -1,0 +1,70 @@
+{% extends 'email_app/base_email.html' %}
+{% block title %}Send Email{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1><i class="bi bi-send" style="color:#2563eb;font-size:1.2rem;"></i> Send Email</h1>
+  <p>Compose and dispatch a message to any recipient.</p>
+</div>
+
+<div class="row">
+  <div class="col-lg-7 col-xl-6">
+    <div class="card">
+      <div class="card-header">
+        <i class="bi bi-pencil-square me-1"></i> New Message
+      </div>
+      <div class="p-4">
+        <form method="post" id="send-email-form">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="mb-4">
+              <label class="form-label">{{ field.label }}</label>
+              {{ field }}
+              {% if field.errors %}
+                <div class="text-danger" style="font-size:.76rem;margin-top:.3rem;">
+                  <i class="bi bi-exclamation-circle me-1"></i>{{ field.errors.0 }}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+
+          <div class="d-flex gap-2 mt-2">
+            <button type="submit" class="btn btn-primary flex-grow-1" id="send-btn">
+              <i class="bi bi-send me-1"></i> Send Email
+            </button>
+            <button type="reset" class="btn btn-outline-secondary">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tips panel -->
+  <div class="col-lg-5 col-xl-4 mt-4 mt-lg-0">
+    <div class="card" style="background:#f8fafc;">
+      <div class="card-header" style="background:#f8fafc;">
+        <i class="bi bi-lightbulb me-1 text-warning"></i> Tips
+      </div>
+      <ul style="list-style:none;padding:1rem 1.25rem;margin:0;font-size:.8rem;color:#64748b;line-height:2;">
+        <li><i class="bi bi-dot text-primary"></i> Use a clear, specific subject line.</li>
+        <li><i class="bi bi-dot text-primary"></i> Keep your message concise and professional.</li>
+        <li><i class="bi bi-dot text-primary"></i> Double-check the recipient address before sending.</li>
+        <li><i class="bi bi-dot text-primary"></i> For multiple recipients, use Bulk Campaign.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('send-email-form').addEventListener('submit', function(e) {
+  const btn = document.getElementById('send-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" style="width:.75rem;height:.75rem;border-width:2px;"></span> Sending…';
+
+  // Show pending alert (server will redirect with success/error Django message)
+  showProAlert('Dispatching your message — please wait.', 'info', 6000);
+});
+</script>
+{% endblock %}

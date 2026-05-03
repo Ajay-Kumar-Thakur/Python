@@ -1,0 +1,142 @@
+{% extends 'news/base.html' %}
+{% load static %}
+
+{% block title %}{{ article.title }} — The Chronicle{% endblock %}
+
+{% block content %}
+<article>
+  <!-- Article Header -->
+  <div style="max-width: 800px; margin: 0 auto 40px; text-align: center;">
+    <div style="margin-bottom: 20px;">
+      <a href="/category/{{ article.category.slug }}/" style="color: var(--accent-red); text-decoration: none; text-transform: uppercase; font-size: 12px; letter-spacing: 2px;">{{ article.category.name }}</a>
+      {% if article.is_breaking %}
+      <span class="badge" style="margin-left: 10px;">Breaking News</span>
+      {% endif %}
+    </div>
+    <h1 style="font-size: 52px; margin-bottom: 20px; line-height: 1.2;">{{ article.title }}</h1>
+    {% if article.excerpt %}
+    <p style="font-size: 20px; color: var(--text-light); font-style: italic; margin-bottom: 30px;">{{ article.excerpt }}</p>
+    {% endif %}
+    <div style="display: flex; justify-content: center; gap: 20px; padding-bottom: 30px; border-bottom: 1px solid var(--border-light);">
+      <div>
+        <i class="far fa-user"></i> <strong>{{ article.author|default:"Staff Writer" }}</strong>
+      </div>
+      <div>
+        <i class="far fa-calendar"></i> {{ article.published_at|date:"F j, Y" }}
+      </div>
+      <div>
+        <i class="far fa-clock"></i> {{ article.published_at|date:"g:i A" }}
+      </div>
+      <div>
+        <i class="far fa-eye"></i> {{ article.views }} reads
+      </div>
+    </div>
+  </div>
+  
+  <!-- Featured Image -->
+  {% if article.image_url %}
+  <div style="margin-bottom: 40px; text-align: center;">
+    <img src="{{ article.image_url }}" alt="{{ article.title }}" style="max-width: 100%; border-radius: 10px; box-shadow: var(--shadow-lg);">
+    <p style="font-size: 12px; color: var(--text-light); margin-top: 10px;">Photo: The Chronicle</p>
+  </div>
+  {% endif %}
+  
+  <!-- Share Bar -->
+  <div style="max-width: 800px; margin: 0 auto 30px;">
+    <div style="display: flex; gap: 15px; justify-content: center;">
+      <a href="https://twitter.com/intent/tweet?text={{ article.title|urlencode }}&url={{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline" style="padding: 8px 20px;"><i class="fab fa-twitter"></i> Share</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline" style="padding: 8px 20px;"><i class="fab fa-facebook"></i> Share</a>
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri }}" target="_blank" class="btn btn-outline" style="padding: 8px 20px;"><i class="fab fa-linkedin"></i> Share</a>
+      <a href="mailto:?subject={{ article.title|urlencode }}&body={{ request.build_absolute_uri }}" class="btn btn-outline" style="padding: 8px 20px;"><i class="far fa-envelope"></i> Email</a>
+    </div>
+  </div>
+  
+  <!-- Article Content -->
+  <div style="max-width: 800px; margin: 0 auto;">
+    <div style="font-size: 18px; line-height: 1.8; color: var(--text-dark);">
+      {{ article.content|linebreaks }}
+    </div>
+    
+    <!-- Tags -->
+    {% if article.tags.all %}
+    <div style="margin: 40px 0; padding-top: 20px; border-top: 1px solid var(--border-light);">
+      <strong style="font-size: 14px;">Tags:</strong>
+      {% for tag in article.tags.all %}
+      <a href="/search/?q={{ tag.name }}" style="display: inline-block; background: var(--bg-gray); padding: 5px 12px; margin: 5px; border-radius: 20px; text-decoration: none; color: var(--primary-dark); font-size: 12px;">{{ tag.name }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Author Bio -->
+    {% if article.author %}
+    <div style="background: var(--bg-gray); padding: 30px; border-radius: 10px; margin: 40px 0; display: flex; gap: 20px; align-items: center;">
+      <div style="width: 80px; height: 80px; background: var(--accent-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+        <i class="fas fa-user fa-2x"></i>
+      </div>
+      <div>
+        <h3 style="margin-bottom: 10px;">About {{ article.author }}</h3>
+        <p style="font-size: 14px; color: var(--text-light);">{{ article.author.bio|default:"Staff writer at The Chronicle covering breaking news and in-depth analysis." }}</p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  
+  <!-- Related Stories -->
+  {% if related %}
+  <div style="margin-top: 60px;">
+    <div style="max-width: 800px; margin: 0 auto;">
+      <h2 style="margin-bottom: 30px;">Related Stories</h2>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px;">
+        {% for rel in related %}
+        <div style="background: var(--bg-gray); border-radius: 10px; overflow: hidden;">
+          {% if rel.image_url %}
+          <img src="{{ rel.image_url }}" alt="{{ rel.title }}" style="width: 100%; height: 150px; object-fit: cover;">
+          {% endif %}
+          <div style="padding: 15px;">
+            <h4 style="font-size: 16px; margin-bottom: 10px;">
+              <a href="{{ rel.get_absolute_url }}" style="color: var(--primary-dark); text-decoration: none;">{{ rel.title }}</a>
+            </h4>
+            <div style="font-size: 12px; color: var(--text-light);">
+              <i class="far fa-calendar"></i> {{ rel.published_at|date:"M j, Y" }}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  
+  <!-- Comments Section -->
+  <div style="max-width: 800px; margin: 60px auto 0;">
+    <h2 style="margin-bottom: 30px;">Comments ({{ comments|length }})</h2>
+    
+    {% for comment in comments %}
+    <div style="background: var(--bg-gray); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+        <strong>{{ comment.name }}</strong>
+        <span style="font-size: 12px; color: var(--text-light);">{{ comment.created_at|date:"F j, Y" }}</span>
+      </div>
+      <p style="font-size: 14px; margin: 0;">{{ comment.content }}</p>
+    </div>
+    {% empty %}
+    <div style="background: var(--bg-gray); padding: 40px; text-align: center; border-radius: 10px;">
+      <p>No comments yet. Be the first to share your thoughts!</p>
+    </div>
+    {% endfor %}
+    
+    <!-- Comment Form -->
+    <div style="margin-top: 40px;">
+      <h3 style="margin-bottom: 20px;">Leave a Comment</h3>
+      <form method="post" style="display: flex; flex-direction: column; gap: 15px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+          <input type="text" name="name" placeholder="Your Name" style="padding: 12px; border: 1px solid var(--border-light); border-radius: 5px;">
+          <input type="email" name="email" placeholder="Your Email" style="padding: 12px; border: 1px solid var(--border-light); border-radius: 5px;">
+        </div>
+        <textarea name="content" rows="5" placeholder="Share your thoughts..." style="padding: 12px; border: 1px solid var(--border-light); border-radius: 5px;"></textarea>
+        <button type="submit" class="btn" style="width: fit-content;">Submit Comment</button>
+      </form>
+    </div>
+  </div>
+</article>
+{% endblock %}

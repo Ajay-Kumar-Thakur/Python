@@ -1,0 +1,60 @@
+{% extends 'email_app/base_email.html' %}
+{% block title %}{{ email.subject }}{% endblock %}
+{% block content %}
+
+<div class="mb-4">
+  <a href="{% url 'email_app:inbox' %}?folder={{ folder }}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i> Back to Inbox
+  </a>
+</div>
+
+<div class="card" style="overflow:hidden;">
+
+  <!-- Header band -->
+  <div style="background:#f8fafc;padding:1.75rem 2rem;border-bottom:1px solid #e8edf2;">
+    <h5 style="font-family:'Playfair Display',serif;font-size:1.2rem;color:#0f172a;margin:0 0 1.25rem;">{{ email.subject }}</h5>
+    <div class="row g-3">
+      <div class="col-sm-6">
+        <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin-bottom:.2rem;">From</div>
+        <div style="font-size:.85rem;color:#334155;font-weight:500;">{{ email.from }}</div>
+      </div>
+      <div class="col-sm-6">
+        <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin-bottom:.2rem;">To</div>
+        <div style="font-size:.85rem;color:#334155;font-weight:500;">{{ email.to }}</div>
+      </div>
+      {% if email.cc %}
+      <div class="col-sm-6">
+        <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin-bottom:.2rem;">CC</div>
+        <div style="font-size:.85rem;color:#334155;font-weight:500;">{{ email.cc }}</div>
+      </div>
+      {% endif %}
+      <div class="col-sm-6">
+        <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:#94a3b8;margin-bottom:.2rem;">Date</div>
+        <div style="font-size:.85rem;color:#334155;">{{ email.date|date:"l, F j, Y · H:i" }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div style="padding:2rem;background:#fff;">
+    {% if '<html' in email.body or '<div' in email.body %}
+      <iframe srcdoc="{{ email.body|escape }}"
+              style="width:100%;min-height:500px;border:none;border-radius:6px;background:#fff;"
+              sandbox="allow-same-origin"></iframe>
+    {% else %}
+      <div style="font-family:'DM Sans',sans-serif;font-size:.9rem;line-height:1.85;color:#334155;white-space:pre-wrap;word-break:break-word;">{{ email.body }}</div>
+    {% endif %}
+  </div>
+
+  <!-- Footer -->
+  <div style="padding:.9rem 2rem;background:#f8fafc;border-top:1px solid #e2e8f0;display:flex;gap:.6rem;">
+    <a href="{% url 'email_app:send_email' %}?to={{ email.from }}&subject=Re: {{ email.subject|urlencode }}"
+       class="btn btn-primary btn-sm">
+      <i class="bi bi-reply me-1"></i> Reply
+    </a>
+    <a href="{% url 'email_app:inbox' %}?folder={{ folder }}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i> Back
+    </a>
+  </div>
+</div>
+{% endblock %}

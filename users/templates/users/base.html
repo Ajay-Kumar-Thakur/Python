@@ -1,0 +1,223 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}UserVault{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0f14;
+      --bg2:       #141720;
+      --bg3:       #1c2030;
+      --surface:   #222638;
+      --border:    rgba(255,255,255,0.07);
+      --accent:    #6c63ff;
+      --accent2:   #4ecca3;
+      --text:      #e8eaf0;
+      --muted:     #7a7f9a;
+      --danger:    #e05c6a;
+      --success:   #4ecca3;
+      --font-head: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+      --radius:    12px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-brand {
+      font-family: var(--font-head);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .nav-brand span { color: var(--accent); }
+    .nav-links { display: flex; align-items: center; gap: 0.5rem; }
+    .nav-links a, .nav-links button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: 14px;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      text-decoration: none;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-links a:hover, .nav-links button:hover {
+      color: var(--text);
+      background: var(--surface);
+    }
+    .nav-links .btn-accent {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 500;
+    }
+    .nav-links .btn-accent:hover { background: #7b73ff; color: #fff; }
+
+    /* MESSAGES */
+    .messages { padding: 1rem 2rem 0; }
+    .alert {
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      margin-bottom: 10px;
+      border-left: 3px solid;
+    }
+    .alert-success { background: rgba(78,204,163,0.1); border-color: var(--success); color: var(--success); }
+    .alert-error   { background: rgba(224,92,106,0.1); border-color: var(--danger); color: var(--danger); }
+    .alert-info    { background: rgba(108,99,255,0.1); border-color: var(--accent); color: var(--accent); }
+
+    /* MAIN CONTAINER */
+    .container { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem; }
+    .center-wrap { max-width: 480px; margin: 3rem auto; }
+
+    /* CARDS */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+    }
+    .card-title {
+      font-family: var(--font-head);
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+
+    /* FORMS */
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 6px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="password"],
+    .form-group input[type="file"] {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus { border-color: var(--accent); }
+    .form-group .error { color: var(--danger); font-size: 12px; margin-top: 5px; }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-block;
+      padding: 11px 24px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.2s, transform 0.15s;
+      text-decoration: none;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: var(--accent); color: #fff; width: 100%; text-align: center; }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { background: var(--surface); }
+
+    /* DIVIDER */
+    .divider {
+      display: flex; align-items: center;
+      gap: 12px; margin: 1.5rem 0;
+      color: var(--muted); font-size: 13px;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1;
+      height: 1px; background: var(--border);
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border);
+      margin-top: 4rem;
+    }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <nav>
+    <a href="{% url 'profile' %}" class="nav-brand">User<span>Vault</span></a>
+    <div class="nav-links">
+      {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}">Profile</a>
+        <form method="post" action="{% url 'logout' %}" style="display:inline">
+          {% csrf_token %}
+          <button type="submit">Log out</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}">Log in</a>
+        <a href="{% url 'register' %}" class="btn-accent">Sign up</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  {% if messages %}
+    <div class="messages">
+      {% for msg in messages %}
+        <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% block content %}{% endblock %}
+
+  <footer>UserVault &mdash; Profile Management</footer>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

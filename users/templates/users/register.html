@@ -1,0 +1,30 @@
+{% extends 'users/base.html' %}
+{% block title %}Create Account{% endblock %}
+
+{% block content %}
+<div class="center-wrap">
+  <div class="card">
+    <h1 class="card-title">Create account</h1>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            {% for error in field.errors %}
+              <div class="error">{{ error }}</div>
+            {% endfor %}
+          {% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary" style="margin-top:0.5rem">Create account</button>
+    </form>
+    <div class="divider">or</div>
+    <p style="text-align:center; font-size:14px; color:var(--muted)">
+      Already have an account?
+      <a href="{% url 'login' %}" style="color:var(--accent); text-decoration:none;">Log in</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

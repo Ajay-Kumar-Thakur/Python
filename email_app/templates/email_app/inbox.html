@@ -1,0 +1,90 @@
+{% extends 'email_app/base_email.html' %}
+{% block title %}Inbox — {{ connected_email }}{% endblock %}
+{% block content %}
+
+<div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
+  <div>
+    <h1><i class="bi bi-inbox" style="color:#2563eb;font-size:1.2rem;"></i> Inbox</h1>
+    <p>{{ connected_email }}</p>
+  </div>
+
+  <!-- Folder / Limit Controls -->
+  <form method="get" class="d-flex gap-2 align-items-center">
+    <select name="folder" class="form-select form-select-sm" style="width:160px;" onchange="this.form.submit()">
+      {% for f in folders %}
+        <option value="{{ f }}" {% if f == current_folder %}selected{% endif %}>{{ f }}</option>
+      {% endfor %}
+    </select>
+    <select name="limit" class="form-select form-select-sm" style="width:90px;" onchange="this.form.submit()">
+      {% for n in limit_choices %}
+        <option value="{{ n }}" {% if n == limit %}selected{% endif %}>{{ n }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-sm btn-outline-secondary" title="Refresh">
+      <i class="bi bi-arrow-clockwise"></i>
+    </button>
+  </form>
+</div>
+
+{% if error %}
+  <div class="card mb-4" style="border-left:3px solid #dc2626;background:#fff5f5;">
+    <div class="p-3" style="font-size:.83rem;color:#7f1d1d;">
+      <strong><i class="bi bi-exclamation-circle me-1"></i>IMAP Error:</strong> {{ error }}
+      <div style="color:#b91c1c;margin-top:.4rem;">Verify IMAP is enabled in your mail settings and your credentials are correct.</div>
+    </div>
+  </div>
+{% endif %}
+
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>{{ emails|length }} message{{ emails|length|pluralize }}</span>
+    <span style="color:#94a3b8;font-size:.75rem;">Folder: {{ current_folder }}</span>
+  </div>
+  <div class="table-responsive">
+    <table class="table mb-0" style="table-layout:fixed;">
+      <colgroup>
+        <col style="width:190px;">
+        <col>
+        <col style="width:100px;">
+      </colgroup>
+      <tbody>
+        {% for em in emails %}
+        <tr style="cursor:pointer;transition:background .12s;border-left:3px solid transparent;"
+            onclick="window.location='{% url 'email_app:inbox_detail' em.id %}?folder={{ current_folder }}'"
+            onmouseover="this.style.borderLeftColor='#2563eb';this.style.background='#f8fafc';"
+            onmouseout="this.style.borderLeftColor='transparent';this.style.background='';">
+          <td style="padding:.8rem 1rem;">
+            <div style="font-size:.82rem;font-weight:600;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+              {{ em.from|truncatechars:28 }}
+            </div>
+          </td>
+          <td style="padding:.8rem .5rem;">
+            <div style="font-size:.83rem;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+              {{ em.subject|truncatechars:60 }}
+            </div>
+            <div style="font-size:.76rem;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:.1rem;">
+              {{ em.body|striptags|truncatechars:80 }}
+            </div>
+          </td>
+          <td style="padding:.8rem 1rem;text-align:right;">
+            {% if em.date %}
+              <div style="font-size:.75rem;color:#94a3b8;line-height:1.6;">
+                {{ em.date|date:"M d" }}<br>
+                <span style="font-size:.7rem;">{{ em.date|time:"H:i" }}</span>
+              </div>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="3" class="text-center py-5" style="color:#94a3b8;">
+            <i class="bi bi-inbox fs-1 d-block mb-2 opacity-25"></i>
+            No messages in {{ current_folder }}.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

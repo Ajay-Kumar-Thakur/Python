@@ -1,0 +1,195 @@
+{% extends 'news/base.html' %}
+{% load static %}
+
+{% block title %}The Chronicle — Breaking News & Analysis{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Featured Story -->
+{% if featured %}
+<div class="hero-section" style="margin-bottom: 50px;">
+  <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px; align-items: center;">
+    {% if featured.image_url %}
+    <div class="hero-image">
+      <img src="{{ featured.image_url }}" alt="{{ featured.title }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px; box-shadow: var(--shadow-lg);">
+    </div>
+    {% endif %}
+    <div class="hero-content">
+      {% if featured.is_breaking %}
+      <span class="badge" style="background: var(--accent-red);">Breaking News</span>
+      {% endif %}
+      <a href="/category/{{ featured.category.slug }}/" style="color: var(--accent-red); text-decoration: none; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">{{ featured.category.name }}</a>
+      <h1 style="font-size: 48px; margin: 20px 0; line-height: 1.2;">
+        <a href="{{ featured.get_absolute_url }}" style="color: var(--primary-dark); text-decoration: none;">{{ featured.title }}</a>
+      </h1>
+      <p style="font-size: 18px; color: var(--text-light); margin-bottom: 20px;">{{ featured.excerpt }}</p>
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <div class="card-meta">
+          <span><i class="far fa-user"></i> {{ featured.author }}</span>
+          <span><i class="far fa-calendar"></i> {{ featured.published_at|date:"F j, Y" }}</span>
+          <span><i class="far fa-eye"></i> {{ featured.views }} reads</span>
+        </div>
+        <button class="btn" onclick="window.location.href='{{ featured.get_absolute_url }}'">Read More →</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Top Stories Grid -->
+<section style="margin-bottom: 50px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent-red); margin-bottom: 30px;">
+    <h2 style="font-size: 28px;">Top Stories</h2>
+    <a href="/search/" style="color: var(--accent-red); text-decoration: none;">View All →</a>
+  </div>
+  
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px;">
+    {% for article in top_stories %}
+    <article class="story-card" style="background: white; border-radius: 10px; overflow: hidden; box-shadow: var(--shadow-sm); transition: var(--transition);">
+      <div style="position: relative;">
+        {% if article.image_url %}
+        <img src="{{ article.image_url }}" alt="{{ article.title }}" style="width: 100%; height: 220px; object-fit: cover;">
+        {% else %}
+        <div style="width: 100%; height: 220px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+          <i class="fas fa-newspaper" style="font-size: 48px; color: white;"></i>
+        </div>
+        {% endif %}
+        {% if article.is_breaking %}
+        <span class="badge" style="position: absolute; top: 15px; left: 15px;">Breaking</span>
+        {% endif %}
+      </div>
+      <div style="padding: 20px;">
+        <a href="/category/{{ article.category.slug }}/" style="color: var(--accent-red); text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">{{ article.category.name }}</a>
+        <h3 style="font-size: 18px; margin: 10px 0;">
+          <a href="{{ article.get_absolute_url }}" style="color: var(--primary-dark); text-decoration: none;">{{ article.title }}</a>
+        </h3>
+        <p style="color: var(--text-light); font-size: 14px; margin-bottom: 15px;">{{ article.excerpt|truncatewords:20 }}</p>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="font-size: 12px; color: var(--text-light);">
+            <i class="far fa-user"></i> {{ article.author|default:"Staff" }}
+          </div>
+          <div style="font-size: 12px; color: var(--text-light);">
+            <i class="far fa-clock"></i> {{ article.published_at|date:"M j" }}
+          </div>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Split Layout: Latest News + Sidebar -->
+<div class="content-grid">
+  <!-- Main Column -->
+  <div>
+    <!-- Latest News Section -->
+    <section style="margin-bottom: 50px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent-red); margin-bottom: 30px;">
+        <h2 style="font-size: 28px;">Latest News</h2>
+        <a href="#" style="color: var(--accent-red); text-decoration: none;">RSS Feed <i class="fas fa-rss"></i></a>
+      </div>
+      
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        {% for article in latest %}
+        <div style="display: flex; gap: 20px; padding: 20px 0; border-bottom: 1px solid var(--border-light); transition: var(--transition);">
+          <div style="flex-shrink: 0;">
+            {% if article.image_url %}
+            <img src="{{ article.image_url }}" alt="{{ article.title }}" style="width: 120px; height: 120px; object-fit: cover; border-radius: 8px;">
+            {% else %}
+            <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+              <i class="fas fa-image" style="color: white; font-size: 32px;"></i>
+            </div>
+            {% endif %}
+          </div>
+          <div style="flex: 1;">
+            <div style="margin-bottom: 8px;">
+              <span class="badge" style="background: var(--accent-red); font-size: 9px;">{{ article.published_at|date:"H:i" }}</span>
+              <a href="/category/{{ article.category.slug }}/" style="color: var(--accent-red); text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">{{ article.category.name }}</a>
+            </div>
+            <h3 style="font-size: 16px; margin-bottom: 8px;">
+              <a href="{{ article.get_absolute_url }}" style="color: var(--primary-dark); text-decoration: none;">{{ article.title }}</a>
+            </h3>
+            <p style="color: var(--text-light); font-size: 13px;">{{ article.excerpt|truncatewords:30 }}</p>
+            <div style="margin-top: 10px; font-size: 12px; color: var(--text-light);">
+              <span><i class="far fa-user"></i> {{ article.author|default:"Staff Writer" }}</span>
+              <span style="margin-left: 15px;"><i class="far fa-eye"></i> {{ article.views }} views</span>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    
+    <!-- Live News from NewsAPI -->
+    {% if newsapi_headlines %}
+    <section style="margin-bottom: 50px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent-red); margin-bottom: 30px;">
+        <h2 style="font-size: 28px;">Live Updates</h2>
+        <span style="font-size: 12px; color: var(--accent-red);"><i class="fas fa-circle" style="font-size: 8px; margin-right: 5px;"></i> Live Feed</span>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px;">
+        {% for api_article in newsapi_headlines|slice:":4" %}
+        <div style="background: var(--bg-gray); border-radius: 10px; overflow: hidden;">
+          {% if api_article.image_url %}
+          <img src="{{ api_article.image_url }}" alt="{{ api_article.title }}" style="width: 100%; height: 180px; object-fit: cover;">
+          {% endif %}
+          <div style="padding: 15px;">
+            <div style="margin-bottom: 8px;">
+              <span class="badge" style="background: var(--accent-red);">{{ api_article.source }}</span>
+            </div>
+            <h4 style="font-size: 15px; margin-bottom: 8px;">
+              <a href="{{ api_article.url }}" target="_blank" style="color: var(--primary-dark); text-decoration: none;">{{ api_article.title|truncatechars:60 }}</a>
+            </h4>
+            <p style="font-size: 12px; color: var(--text-light);">{{ api_article.description|truncatewords:12 }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+  </div>
+  
+  <!-- Sidebar -->
+  <div>
+    <!-- Trending Widget -->
+    <div class="sidebar-widget">
+      <h3 class="widget-title"><i class="fas fa-fire"></i> Most Read</h3>
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        {% for article in trending %}
+        <div style="display: flex; gap: 15px; align-items: center;">
+          <div style="width: 50px; height: 50px; background: linear-gradient(135deg, var(--accent-red), #e74c3c); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px;">
+            {{ forloop.counter }}
+          </div>
+          <div style="flex: 1;">
+            <h4 style="font-size: 14px; margin-bottom: 5px;">
+              <a href="{{ article.get_absolute_url }}" style="color: var(--primary-dark); text-decoration: none;">{{ article.title|truncatechars:50 }}</a>
+            </h4>
+            <div style="font-size: 11px; color: var(--text-light);">
+              <i class="far fa-eye"></i> {{ article.views }} reads
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    
+    <!-- Newsletter Widget -->
+    <div class="sidebar-widget" style="background: linear-gradient(135deg, var(--primary-dark), var(--secondary-dark)); color: white;">
+      <h3 class="widget-title" style="color: white;">Newsletter</h3>
+      <p style="font-size: 13px; margin-bottom: 15px;">Get the best of The Chronicle delivered to your inbox weekly.</p>
+      <form style="display: flex; gap: 10px;">
+        <input type="email" placeholder="Your email address" style="flex: 1; padding: 10px; border: none; border-radius: 5px;">
+        <button type="submit" style="background: var(--accent-red); color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">Subscribe</button>
+      </form>
+    </div>
+    
+    <!-- Ad Space -->
+    <div class="sidebar-widget" style="text-align: center;">
+      <h3 class="widget-title">Advertisement</h3>
+      <div style="background: linear-gradient(135deg, #e0e0e0, #f5f5f5); height: 250px; display: flex; align-items: center; justify-content: center; border-radius: 5px;">
+        <p style="color: #999;">Ad Space<br>300x250</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
